@@ -1,0 +1,83 @@
+.table {
+	position: relative;
+
+	&__dialog {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 3;
+		max-width: 200px;
+		border: 1px solid #ccc;
+		background-color: #fff;
+		box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
+	}
+
+	&__dialog-btn {
+		font-size: 14px;
+		text-align: left;
+		width: 100%;
+		padding: 10px;
+		transition: 0.3s ease;
+
+		&:hover {
+			color: #fff;
+			background-color: rgba(82, 168, 236, 0.8);
+		}
+	}
+
+	&__wrapper {
+		margin-top: 40px;
+	}
+
+	&__sticky-menu {
+		position: sticky;
+		top: 0;
+		left: 0;
+		padding: 20px;
+		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+
+		.btn {
+			align-self: flex-end;
+		}
+	}
+
+	&__create {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px;
+	}
+
+	label {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+		margin: 0;
+	}
+
+	input {
+		height: 26px;
+		margin: 0;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+
+		th,
+		td {
+			border: 1px solid #ddd !important;
+			padding: 10px;
+			user-select: none;
+		}
+
+		th {
+			font-size: 14px;
+			font-weight: 700;
+		}
+
+		td {
+			font-size: 12px;
+		}
+	}
+}

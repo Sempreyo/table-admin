@@ -1,0 +1,15 @@
+.container {
+	max-width: 1202px;
+	width: 100%;
+	padding: 0 20px;
+	margin: 0 auto;
+	box-sizing: border-box;
+
+	@include max(t) {
+		padding: 0 15px;
+	}
+
+	&--big {
+		max-width: 1400px;
+	}
+}

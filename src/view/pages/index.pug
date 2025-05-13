@@ -1,0 +1,25 @@
+extends ../layouts/default
+
+block vars
+	-
+		const page = {
+			title: 'Table-admin'
+		};
+
+block main
+	section.table
+		.table__dialog
+			button.table__dialog-btn.js-create-before Добавить до строки
+			button.table__dialog-btn.js-create-after Добавить после строки
+		.container
+			.table__sticky-menu
+				.table__create
+					label Количество строк
+						input.table__num-rows(type='number', min='1')
+					label Количество столбцов
+						input.table__num-columns(type='number', min='1')
+					button.btn.btn-primary.btn-small.js-create-table Добавить
+				.table__panel(hidden)
+					button.btn.btn-primary.btn-small.js-create-row Добавить строку
+					button.btn.btn-primary.btn-small.js-create-column Добавить столбец
+			.table__wrapper

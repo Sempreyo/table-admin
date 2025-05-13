@@ -1,0 +1,48 @@
+@keyframes pulse-small {
+	0% {
+		transform: translate(-50%, -50%) scale(0.8);
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 1;
+	}
+
+	100% {
+		transform: translate(-50%, -50%) scale(1.7);
+		opacity: 0;
+	}
+}
+
+@keyframes pulse-big {
+	0% {
+		transform: translate(-50%, -50%) scale(0.8);
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 1;
+	}
+
+	100% {
+		transform: translate(-50%, -50%) scale(2.7);
+		opacity: 0;
+	}
+}
+
+@keyframes pulse {
+	0% {
+		transform: scale(0.8);
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 1;
+	}
+
+	100% {
+		transform: scale(3);
+		opacity: 0;
+	}
+}
+

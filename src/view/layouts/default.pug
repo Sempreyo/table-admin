@@ -1,0 +1,24 @@
+doctype html
+
+block vars
+include ../mixins/mixins
+
+html(lang='ru')
+	head
+		meta(charset='UTF-8')
+		meta(name='viewport', content='width=device-width, initial-scale=1.0')
+		meta(name='description', content='C3Solutions')
+		meta(name='keywords', content='')
+
+		link(href='css/main.min.css', rel='stylesheet', type='text/css')
+		title= `${page.title}`
+
+	body
+		main.main
+			block main
+
+	block modals
+
+	script(src="js/main.min.js")
+
+	block scripts

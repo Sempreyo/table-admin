@@ -1,0 +1,17 @@
+mixin picture(picPath, type, className, alt, mobilePicPath, tablet, smallLaptopPicPath, laptopPicPath)
+    picture
+        if mobilePicPath
+            source(srcset=`./images/${mobilePicPath}.${type} 1x, ./images/${mobilePicPath}@2x.${type} 2x`, media='(max-width: 767px) ')
+            source(srcset=`./images/${mobilePicPath}.webp 1x, ./images/${mobilePicPath}@2x.webp 2x`, media='(max-width: 767px)')
+        if tablet
+            source(srcset=`./images/${tablet}.${type} 1x, ./images/${tablet}@2x.${type} 2x`, media='(max-width: 991px) ')
+            source(srcset=`./images/${tablet}.webp 1x, ./images/${tablet}@2x.webp 2x`, media='(max-width: 991px)')
+        if smallLaptopPicPath
+            source(srcset=`./images/${smallLaptopPicPath}.${type} 1x, ./images/${smallLaptopPicPath}@2x.${type} 2x`, media='(max-width: 1279px) ')
+            source(srcset=`./images/${smallLaptopPicPath}.webp 1x, ./images/${smallLaptopPicPath}@2x.webp 2x`, media='(max-width: 1279px)')
+        if laptopPicPath
+            source(srcset=`./images/${laptopPicPath}.${type} 1x, ./images/${laptopPicPath}@2x.${type} 2x`, media='(max-width: 1439px) ')
+            source(srcset=`./images/${laptopPicPath}.webp 1x, ./images/${laptopPicPath}@2x.webp 2x`, media='(max-width: 1439px)')
+        source(srcset=`./images/${picPath}.webp 1x, ./images/${picPath}@2x.webp 2x`, type='image/webp')
+        source(srcset=`./images/${picPath}.webp 1x, ./images/${picPath}@2x.webp 2x`, type='image/webp')
+        img(class=className, src=`./images/${picPath}.${type}`, srcset=`./images/${picPath}.${type} 1x, ./images/${picPath}@2x.${type} 2x`, alt=alt)&attributes(attributes)

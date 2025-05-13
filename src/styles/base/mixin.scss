@@ -1,0 +1,61 @@
+/* Адаптив */
+@function _get-media-width($width, $maxmin) {
+	@if map-get($media-list, $width) {
+		$width: map-get($media-list, $width);
+
+		@if $maxmin {
+			@return $width;
+		} @else {
+			@return $width + 1;
+		}
+	} @else {
+		@return $width;
+	}
+}
+
+@mixin max($width) {
+	$width: _get-media-width($width, true);
+	@media only screen and (max-width: $width + 'px') {
+		@content;
+	}
+}
+
+@mixin min($width) {
+	$width: _get-media-width($width, false);
+	@media only screen and (min-width: $width + 'px') {
+		@content;
+	}
+}
+
+//- Fluid
+//- Принимает:
+//-   $min    {number} - минимальный размер
+//-   $max    {number} - максимальный размер
+//-   $wMin   {number} - минимальная ширина экрана
+//-   $wMax   {number} - максимальная ширина экрана
+//- Примеры использования:
+//-   font-size: fluid(16, 20, 992, 1440)
+//-   gap: fluid(12, 24, 360, 576);
+//-   padding: fluid(20, 48, 1280, 1920);
+
+@function fluid($min, $max, $wMin, $wMax) {
+	$result: calc(#{$min}px + ( #{$max} - #{$min} ) * ( (100vw - #{$wMin}px) / ( #{$wMax} - #{$wMin}) ));
+
+	@return $result;
+}
+
+@function vw1440($px) {
+	@return calc(($px/1440) * 100)+vw;
+}
+
+@function vw1279($px) {
+	@return calc(($px/1279) * 100)+vw;
+}
+
+@function vw991($px) {
+	@return calc(($px/991) * 100)+vw;
+}
+
+@function vw767($px) {
+	@return calc(($px/767) * 100)+vw;
+}

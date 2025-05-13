@@ -1,0 +1,133 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+li,
+figure,
+figcaption,
+blockquote,
+dl,
+dd {
+	margin: 0;
+}
+
+html {
+	-moz-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+	-o-text-size-adjust: 100%;
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+	scroll-behavior: smooth;
+}
+
+body {
+	min-height: 100vh;
+	scroll-behavior: smooth;
+	text-rendering: optimizeSpeed;
+	font-family: $mainFont;
+	background-color: $white;
+	color: $color-main;
+	font-weight: 400;
+	font-size: 20px;
+	line-height: 1.2;
+
+	/* iOS fix */
+	-webkit-font-smoothing: antialiased;
+	-moz-font-smoothing: antialiased;
+	-o-font-smoothing: antialiased;
+	-webkit-locale: auto;
+	white-space: normal;
+
+	@include max(d) {
+		font-size: fluid(18, 20, 992, 1280);
+	}
+
+	@include max(tl) {
+		font-size: fluid(16, 18, 768, 992);
+	}
+
+	@include max(ti) {
+		font-size: fluid(14, 16, 0, 768);
+	}
+}
+
+.bottom-overflow {
+	overflow: hidden;
+}
+
+main {
+	position: relative;
+	z-index: 1;
+}
+
+.main-outer {
+	overflow: hidden;
+}
+
+a {
+	color: $color-main;
+	text-decoration: none;
+}
+
+svg {
+	width: auto;
+	height: auto;
+}
+
+img {
+	display: block;
+	max-width: 100%;
+}
+
+input,
+button {
+	-webkit-appearance: none;
+}
+
+input,
+button,
+select,
+textarea {
+	font: inherit;
+	background-color: transparent;
+	border: 0;
+	border-radius: 0;
+	outline: 0;
+}
+
+input,
+textarea {
+	padding: 0;
+	margin: 0;
+
+	&:focus::placeholder {
+		opacity: 0;
+	}
+}
+
+ul,
+ol {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+[hidden] {
+	display: none !important;
+}
+
+.cursor-cell {
+	cursor: cell;
+}
