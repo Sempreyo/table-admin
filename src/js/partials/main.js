@@ -1,3 +1,49 @@
+let selection = {
+	start: null,
+	end: null,
+	active: false,
+	clickCount: 0
+};
+
+const setCellFocus = (td, parent) => {
+	const cells = parent.querySelectorAll("td, th");
+
+	cells.forEach(cell => cell.classList.remove("focused"));
+	td.classList.add("focused");
+}
+
+// Событие редактирования ячейки
+const setEditableCellEvent = (cell, parent) => {
+	cell.addEventListener("click", () => {
+		if (selection.active) { // В обычном режиме
+			setCellFocus(cell, parent);
+			makeCellEditable(cell);
+		} else if (cell.tagName === "TD") { // В режиме объединения/разделения ячеек
+			const rowIndex = +cell.dataset.row;
+			const columnIndex = +cell.dataset.column;
+
+			switch (selection.clickCount) {
+				case 0:
+					selection.start = {rowIndex, columnIndex};
+					selection.clickCount += 1;
+					break;
+				case 1:
+					if (selection.start.rowIndex !== +cell.dataset.row ||
+						selection.start.columnIndex !== +cell.dataset.column
+					) {
+						selection.end = {rowIndex, columnIndex};
+						selection.clickCount += 1;
+					} else {
+						alert("Выделите вторую ячейку для объединения");
+					}
+					break;
+			}
+
+			resetSelection();
+		}
+	});
+}
+
 const createTable = (parent, rowsInput, columnsInput, menuCreate, menuPanel) => {
 	const rows = +rowsInput.value;
 	const columns = +columnsInput.value;
@@ -20,6 +66,8 @@ const createTable = (parent, rowsInput, columnsInput, menuCreate, menuPanel) => 
 		th.textContent = `Заголовок ${cell+1}`;
 		//th.addEventListener("click", sortTable(i));
 		headerRow.append(th);
+
+		setEditableCellEvent(th, parent);
 	}
 
 	thead.append(headerRow);
@@ -32,10 +80,17 @@ const createTable = (parent, rowsInput, columnsInput, menuCreate, menuPanel) => 
 		for (let cell = 0; cell < columns; cell++) {
 			const td = document.createElement("td");
 
+			// Добавляем фокус первой ячейке в первой строке
+			if (row === 0 && cell === 0) {
+				setCellFocus(td, parent);
+			}
+
 			td.textContent = `Строка ${row+1}, Ячейка ${cell+1}`;
 			td.dataset.row = row.toString();
 			td.dataset.column = cell.toString();
 			tr.append(td);
+
+			setEditableCellEvent(td, parent);
 		}
 
 		tbody.append(tr);
@@ -46,54 +101,94 @@ const createTable = (parent, rowsInput, columnsInput, menuCreate, menuPanel) => 
 
 	menuCreate.setAttribute("hidden", true);
 	menuPanel.removeAttribute("hidden");
+
+	// Создание событий
+	/*const newTable = parent.querySelector("table");
+
+	newTable.addEventListener("click", (e) => {
+
+	});*/
 }
 
-const setCursorCell = () => {
-	document.body.classList.add("cursor-cell");
-}
+const makeCellEditable = (td) => {
+	const currentText = td.innerHTML;
 
-const removeCursorCell = () => {
-	document.body.classList.remove("cursor-cell");
-}
+	td.innerHTML = `<input type="text" value="${currentText}" style="width: 100%;">`;
 
-const createRow = () => {
-	const table = document.querySelector(".table__wrapper table");
-	const tr = table.querySelectorAll("tbody tr");
+	const input = td.querySelector("input");
+	input.focus();
 
-	setCursorCell();
+	input.addEventListener("blur", () => {
+		td.innerHTML = input.value;
+	});
 
-	tr.forEach(el => el.classList.add("selected"));
-
-	const trSelected = table.querySelectorAll(".selected");
-
-	trSelected.forEach(el => {
-		el.addEventListener("click", (e) => {
-			[...e.currentTarget.children].forEach(el => {
-				console.log(el);
-			});
-
-			if (e.currentTarget) {
-				e.currentTarget.insertAdjacentHTML("afterend", `<tr>${[...e.currentTarget.children].map(() => "<td></td>").join("")}</tr>`);
-			}
-		});
+	input.addEventListener("keypress", (e) => {
+		if (e.key === "Enter") {
+			input.blur();
+		}
 	});
 }
 
-const createColumn = (table) => {
+const createRowHandler = (table) => {
+	const focusedCell = table.querySelector(".focused");
 
+	if (focusedCell) {
+		const row = focusedCell.closest("tr");
+		const newRow = document.createElement("tr");
+
+		[...row.children].forEach(() => {
+			const td = document.createElement("td");
+
+			setEditableCellEvent(td, table);
+
+			newRow.append(td);
+		})
+
+		row.insertAdjacentElement("afterend", newRow);
+	}
+}
+
+const createColumnHandler = (table) => {
+	const focusedCellIndex = table.querySelector(".focused").cellIndex;
+
+	table.querySelectorAll("tr").forEach(tr => {
+		const cellSelected = tr.querySelectorAll("td, th")[focusedCellIndex];
+		const newCell = cellSelected.tagName === "TD" ?
+			document.createElement("td") :
+			document.createElement("th");
+
+		setEditableCellEvent(newCell, table);
+
+		cellSelected.insertAdjacentElement("afterend", newCell);
+	});
+}
+
+const resetSelection = () => {
+	selection = {
+		start: null,
+		end: null,
+		active: false,
+		clickCount: 0
+	}
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+	const container = document.querySelector(".table__wrapper");
+	let table = null;
 	const menuCreateTable = document.querySelector(".table__create");
 	const menuPanel = document.querySelector(".table__panel");
-	const container = document.querySelector(".table__wrapper");
 	const rowsInput = menuCreateTable.querySelector(".table__num-rows");
 	const columnsInput = menuCreateTable.querySelector(".table__num-columns");
 	const createButton = menuCreateTable.querySelector(".js-create-table");
 	const addRowButton = menuPanel.querySelector(".js-create-row");
 	const addColumnButton = menuPanel.querySelector(".js-create-column");
+	const joinCellsButton = menuPanel.querySelector(".js-join-cells");
 
-	createButton.addEventListener("click", () => createTable(container, rowsInput, columnsInput, menuCreateTable, menuPanel));
+	createButton.addEventListener("click", () => {
+		createTable(container, rowsInput, columnsInput, menuCreateTable, menuPanel);
+		table = container.querySelector(".table__wrapper table");
 
-	addRowButton.addEventListener("click", createRow);
+		addRowButton.addEventListener("click", (e) => createRowHandler(table));
+		addColumnButton.addEventListener("click", (e) => createColumnHandler(table));
+	});
 });
