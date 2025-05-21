@@ -31,17 +31,78 @@ const setEditableCellEvent = (cell, parent) => {
 					if (selection.start.rowIndex !== +cell.dataset.row ||
 						selection.start.columnIndex !== +cell.dataset.column
 					) {
-						selection.end = {rowIndex, columnIndex};
 						selection.clickCount += 1;
+						parent.querySelectorAll("td").forEach(td => td.style.backgroundColor = "");
+						selection.end = {rowIndex, columnIndex};
+						joinCells(parent);
 					} else {
 						alert("Выделите вторую ячейку для объединения");
 					}
 					break;
 			}
 
-			resetSelection();
+			console.log(selection);
+
+			//resetSelection();
 		}
 	});
+}
+
+// Выделение ячеек при объединении/разделении ячеек
+const updateSelectionHandler = (table, td) => {
+	if (td.tagName !== "TD") return;
+
+	const rowIndex = +td.dataset.row;
+	const columnIndex = +td.dataset.column;
+
+	selection.end = {rowIndex, columnIndex};
+
+	table.querySelectorAll("td").forEach(td => td.style.backgroundColor = "");
+
+	if (!selection.start || !selection.end || selection.clickCount > 1) return;
+
+	const startRow = Math.min(selection.start.rowIndex, selection.end.rowIndex);
+	const endRow = Math.max(selection.start.rowIndex, selection.end.rowIndex);
+	const startColumn = Math.min(selection.start.columnIndex, selection.end.columnIndex);
+	const endColumn = Math.max(selection.start.columnIndex, selection.end.columnIndex);
+	
+	for (let row = startRow; row <= endRow; row++) {
+		for (let column = startColumn; column <= endColumn; column++) {
+			const td = table.querySelector(`td[data-row="${row}"][data-column="${column}"]`);
+
+			if (td) {
+				td.style.backgroundColor = "red";
+			}
+		}
+	}
+}
+
+// Объединение ячеек
+const joinCells = (table) => {
+	const startRow = Math.min(selection.start.rowIndex, selection.end.rowIndex);
+	const endRow = Math.max(selection.start.rowIndex, selection.end.rowIndex);
+	const startColumn = Math.min(selection.start.columnIndex, selection.end.columnIndex);
+	const endColumn = Math.max(selection.start.columnIndex, selection.end.columnIndex);
+
+	console.log(selection);
+	
+	for (let row = startRow; row <= endRow; row++) {
+		for (let column = startColumn; column <= endColumn; column++) {
+			const td = table.querySelector(`td[data-row="${row}"][data-column="${column}"]`);
+
+			if (column > startColumn) {
+				td.remove();
+			} else {
+				td.setAttribute("colspan", endColumn);
+			}
+
+			if (row > startRow) {
+				td.remove();
+			} else {
+				td.setAttribute("rowspan", endRow);
+			}
+		}
+	}
 }
 
 const createTable = (parent, rowsInput, columnsInput, menuCreate, menuPanel) => {
@@ -91,6 +152,8 @@ const createTable = (parent, rowsInput, columnsInput, menuCreate, menuPanel) => 
 			tr.append(td);
 
 			setEditableCellEvent(td, parent);
+
+			td.addEventListener("mouseenter", (e) => updateSelectionHandler(parent, e.target));
 		}
 
 		tbody.append(tr);
