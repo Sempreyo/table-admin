@@ -1,5 +1,6 @@
 let selection = {
 	start: null,
+	hovered: null,
 	end: null,
 	active: false,
 	clickCount: 0
@@ -15,7 +16,7 @@ const setCellFocus = (td, parent) => {
 // Событие редактирования ячейки
 const setEditableCellEvent = (cell, parent) => {
 	cell.addEventListener("click", () => {
-		if (selection.active) { // В обычном режиме
+		if (!selection.active) { // В обычном режиме
 			setCellFocus(cell, parent);
 			makeCellEditable(cell);
 		} else if (cell.tagName === "TD") { // В режиме объединения/разделения ячеек
@@ -32,7 +33,7 @@ const setEditableCellEvent = (cell, parent) => {
 						selection.start.columnIndex !== +cell.dataset.column
 					) {
 						selection.clickCount += 1;
-						parent.querySelectorAll("td").forEach(td => td.style.backgroundColor = "");
+						parent.querySelectorAll("td").forEach(cell => cell.style.backgroundColor = "");
 						selection.end = {rowIndex, columnIndex};
 						joinCells(parent);
 					} else {
@@ -40,38 +41,34 @@ const setEditableCellEvent = (cell, parent) => {
 					}
 					break;
 			}
-
-			console.log(selection);
-
-			//resetSelection();
 		}
 	});
 }
 
-// Выделение ячеек при объединении/разделении ячеек
-const updateSelectionHandler = (table, td) => {
-	if (td.tagName !== "TD") return;
+// Выделение ячеек при объединении/разделении
+const updateSelectionHandler = (table, cell) => {
+	if (cell.tagName !== "TD") return;
 
-	const rowIndex = +td.dataset.row;
-	const columnIndex = +td.dataset.column;
+	const rowIndex = +cell.dataset.row;
+	const columnIndex = +cell.dataset.column;
 
-	selection.end = {rowIndex, columnIndex};
+	selection.hovered = {rowIndex, columnIndex};
 
-	table.querySelectorAll("td").forEach(td => td.style.backgroundColor = "");
+	table.querySelectorAll("td").forEach(cell => cell.style.backgroundColor = "");
 
-	if (!selection.start || !selection.end || selection.clickCount > 1) return;
+	if (!selection.start || !selection.hovered || selection.clickCount > 1) return;
 
-	const startRow = Math.min(selection.start.rowIndex, selection.end.rowIndex);
-	const endRow = Math.max(selection.start.rowIndex, selection.end.rowIndex);
-	const startColumn = Math.min(selection.start.columnIndex, selection.end.columnIndex);
-	const endColumn = Math.max(selection.start.columnIndex, selection.end.columnIndex);
+	const startRow = Math.min(selection.start.rowIndex, selection.hovered.rowIndex);
+	const endRow = Math.max(selection.start.rowIndex, selection.hovered.rowIndex);
+	const startColumn = Math.min(selection.start.columnIndex, selection.hovered.columnIndex);
+	const endColumn = Math.max(selection.start.columnIndex, selection.hovered.columnIndex);
 	
 	for (let row = startRow; row <= endRow; row++) {
 		for (let column = startColumn; column <= endColumn; column++) {
-			const td = table.querySelector(`td[data-row="${row}"][data-column="${column}"]`);
+			const cellSelected = table.querySelector(`td[data-row="${row}"][data-column="${column}"]`);
 
-			if (td) {
-				td.style.backgroundColor = "red";
+			if (cellSelected) {
+				cellSelected.style.backgroundColor = "#a2ddfa";
 			}
 		}
 	}
@@ -84,25 +81,27 @@ const joinCells = (table) => {
 	const startColumn = Math.min(selection.start.columnIndex, selection.end.columnIndex);
 	const endColumn = Math.max(selection.start.columnIndex, selection.end.columnIndex);
 
-	console.log(selection);
-	
+	const rows = table.querySelectorAll("tbody tr");
+	const tdFirst = rows[startRow].cells[startColumn]; // Первая выделенная ячейка
+	const tdFirstValue = tdFirst.textContent; // Значение первой выделенной ячейки
+
 	for (let row = startRow; row <= endRow; row++) {
 		for (let column = startColumn; column <= endColumn; column++) {
-			const td = table.querySelector(`td[data-row="${row}"][data-column="${column}"]`);
+			if (row === startRow && column === startColumn) continue; // Пропускаем первую ячейку, остальные прячем
 
-			if (column > startColumn) {
-				td.remove();
-			} else {
-				td.setAttribute("colspan", endColumn);
-			}
-
-			if (row > startRow) {
-				td.remove();
-			} else {
-				td.setAttribute("rowspan", endRow);
-			}
+			const td = rows[row].cells[column];
+			td.setAttribute("hidden", "true");
+			td.setAttribute("data-merged", "true");
+			td.setAttribute("data-merged-with", `${startRow}, ${startColumn}`);
 		}
 	}
+
+	tdFirst.rowSpan = endRow - startRow + 1;
+	tdFirst.colSpan = endColumn - startColumn + 1;
+	tdFirst.textContent = tdFirstValue;
+	tdFirst.setAttribute("data-merged-main", "true");
+
+	resetSelection();
 }
 
 const createTable = (parent, rowsInput, columnsInput, menuCreate, menuPanel) => {
@@ -126,9 +125,14 @@ const createTable = (parent, rowsInput, columnsInput, menuCreate, menuPanel) => 
 
 		th.textContent = `Заголовок ${cell+1}`;
 		//th.addEventListener("click", sortTable(i));
+
+		th.dataset.row = "0";
+		th.dataset.column = cell.toString();
 		headerRow.append(th);
 
 		setEditableCellEvent(th, parent);
+
+		th.addEventListener("mouseenter", (e) => updateSelectionHandler(parent, e.target));
 	}
 
 	thead.append(headerRow);
@@ -174,20 +178,29 @@ const createTable = (parent, rowsInput, columnsInput, menuCreate, menuPanel) => 
 }
 
 const makeCellEditable = (td) => {
-	const currentText = td.innerHTML;
+	const currentText = td.textContent;
+	td.textContent = "";
 
-	td.innerHTML = `<input type="text" value="${currentText}" style="width: 100%;">`;
+	const input = document.createElement("input");
+	input.type = "text";
+	input.value = currentText;
 
-	const input = td.querySelector("input");
+	td.append(input);
 	input.focus();
 
-	input.addEventListener("blur", () => {
-		td.innerHTML = input.value;
+	const finishEditing = () => {
+		td.textContent = input.value;
+	}
+
+	input.addEventListener("blur", finishEditing);
+
+	input.addEventListener("click", (e) => {
+		e.stopPropagation();
 	});
 
-	input.addEventListener("keypress", (e) => {
+	input.addEventListener("keydown", (e) => {
 		if (e.key === "Enter") {
-			input.blur();
+			finishEditing();
 		}
 	});
 }
@@ -229,6 +242,7 @@ const createColumnHandler = (table) => {
 const resetSelection = () => {
 	selection = {
 		start: null,
+		hovered: null,
 		end: null,
 		active: false,
 		clickCount: 0
@@ -250,8 +264,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	createButton.addEventListener("click", () => {
 		createTable(container, rowsInput, columnsInput, menuCreateTable, menuPanel);
 		table = container.querySelector(".table__wrapper table");
+	});
 
-		addRowButton.addEventListener("click", (e) => createRowHandler(table));
-		addColumnButton.addEventListener("click", (e) => createColumnHandler(table));
+	addRowButton.addEventListener("click", () => createRowHandler(table));
+	addColumnButton.addEventListener("click", () => createColumnHandler(table));
+	joinCellsButton.addEventListener("click", () => {
+		selection.active = true;
 	});
 });
