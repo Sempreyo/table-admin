@@ -17,7 +17,44 @@ block main
 						input.table__num-columns(type='number', min='1')
 					button.btn.btn-primary.btn-small.js-create-table Добавить
 				.table__panel(hidden)
-					button.btn.btn-primary.btn-small.js-create-row Добавить строку
-					button.btn.btn-primary.btn-small.js-create-column Добавить столбец
-					button.btn.btn-primary.btn-small.js-join-cells Объединить ячейки
+					.table__panel-group
+						button.btn.btn-primary.btn-small.js-edit(data-edit='bold')
+							i.icon-bold.icon-white
+						button.btn.btn-primary.btn-small.js-edit(data-edit='italic')
+							i.icon-italic.icon-white
+						button.btn.btn-primary.btn-small.js-edit(data-edit='horizontal-left')
+							i.icon-align-left.icon-white
+						button.btn.btn-primary.btn-small.js-edit(data-edit='horizontal-center')
+							i.icon-align-center.icon-white
+						button.btn.btn-primary.btn-small.js-edit(data-edit='horizontal-right')
+							i.icon-align-right.icon-white
+						button.btn.btn-primary.btn-small.js-edit(data-edit='remove-edit')
+							i.icon-remove.icon-white
+						.table__button-with-popup
+							button.btn.btn-primary.btn-small.js-link
+								span Ссылка
+							form.table__link-popup(hidden)
+								input(type='text', name='link-text', placeholder='Текст')
+								input(type='text', name='link', placeholder='Ссылка')
+								label.checkbox
+									input(type='checkbox', name='link-target')
+									p
+										i.icon-ok
+									span В новом окне?
+								button.btn.btn-primary.btn-small(type='submit') Добавить
+					.table__panel-group
+						button.btn.btn-primary.btn-small.js-create-row
+							i.icon-plus-sign.icon-white
+							span Строка
+						button.btn.btn-primary.btn-small.js-create-column
+							i.icon-plus-sign.icon-white
+							span Столбец
+					.table__panel-group
+						button.btn.btn-primary.btn-small.js-join-cells
+							i.icon-resize-small.icon-white
+							span Объединить
+						button.btn.btn-primary.btn-small.js-split-cells
+							i.icon-resize-full.icon-white
+							span Разделить
+					.table__panel-group
 			.table__wrapper

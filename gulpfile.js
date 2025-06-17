@@ -32,8 +32,8 @@ function startwatch() {
 	watch(['src/**/*.js', '!src/**/*.min.js'], scripts);
 	watch('src/**/styles/**/*', styles);
 	watch('src/**/*.html').on('change', browserSync.reload);
-	watch('src/images/**/*', images);
-	watch('src/images/**/*', imagesWebp);
+	watch('src/img/**/*', images);
+	watch('src/img/**/*', imagesWebp);
 	watch('src/view/**/*.pug', pugHtml);
 	watch('src/icons/**/*.svg', icons);
 }
@@ -78,9 +78,9 @@ function fonts() {
 }
 
 function images() {
-	return src('src/images/**/*')
+	return src('src/img/**/*')
 		.pipe(plumber())
-		.pipe(newer('public/images/'))
+		.pipe(newer('public/img/'))
 		.pipe(imagemin([
 			imagemin.gifsicle({interlaced: true}),
 			imagemin.mozjpeg({quality: 75, progressive: true}),
@@ -91,17 +91,17 @@ function images() {
 				]
 			})
 		]))
-		.pipe(dest('public/images/'))
+		.pipe(dest('public/img/'))
 		.pipe(browserSync.stream())
 }
 
 function imagesWebp() {
-	return src('src/images/**/*.{png,jpg}')
+	return src('src/img/**/*.{png,jpg}')
 		.pipe(plumber())
 		.pipe(webp({
 			quality: 80
 		}))
-		.pipe(dest('public/images/'))
+		.pipe(dest('public/img/'))
 		.pipe(browserSync.stream())
 }
 
@@ -122,7 +122,7 @@ function icons() {
 			inlineSvg: true
 		}))
 		.pipe(rename('sprite.svg'))
-		.pipe(dest('public/images/'))
+		.pipe(dest('public/img/'))
 		.pipe(browserSync.stream())
 }
 

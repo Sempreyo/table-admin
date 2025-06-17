@@ -23,9 +23,35 @@
               <button class="btn btn-primary btn-small js-create-table">Добавить</button>
             </div>
             <div class="table__panel" hidden>
-              <button class="btn btn-primary btn-small js-create-row">Добавить строку</button>
-              <button class="btn btn-primary btn-small js-create-column">Добавить столбец</button>
-              <button class="btn btn-primary btn-small js-join-cells">Объединить ячейки</button>
+              <div class="table__panel-group">
+                <button class="btn btn-primary btn-small js-edit" data-edit="bold"><i class="icon-bold icon-white"></i></button>
+                <button class="btn btn-primary btn-small js-edit" data-edit="italic"><i class="icon-italic icon-white"></i></button>
+                <button class="btn btn-primary btn-small js-edit" data-edit="horizontal-left"><i class="icon-align-left icon-white"></i></button>
+                <button class="btn btn-primary btn-small js-edit" data-edit="horizontal-center"><i class="icon-align-center icon-white"></i></button>
+                <button class="btn btn-primary btn-small js-edit" data-edit="horizontal-right"><i class="icon-align-right icon-white"></i></button>
+                <button class="btn btn-primary btn-small js-edit" data-edit="remove-edit"><i class="icon-remove icon-white"></i></button>
+                <div class="table__button-with-popup">
+                  <button class="btn btn-primary btn-small js-link"><span>Ссылка</span></button>
+                  <form class="table__link-popup" hidden>
+                    <input type="text" name="link-text" placeholder="Текст">
+                    <input type="text" name="link" placeholder="Ссылка">
+                    <label class="checkbox">
+                      <input type="checkbox" name="link-target">
+                      <p><i class="icon-ok"></i></p><span>В новом окне?</span>
+                    </label>
+                    <button class="btn btn-primary btn-small" type="submit">Добавить</button>
+                  </form>
+                </div>
+              </div>
+              <div class="table__panel-group">
+                <button class="btn btn-primary btn-small js-create-row"><i class="icon-plus-sign icon-white"></i><span>Строка</span></button>
+                <button class="btn btn-primary btn-small js-create-column"><i class="icon-plus-sign icon-white"></i><span>Столбец</span></button>
+              </div>
+              <div class="table__panel-group">
+                <button class="btn btn-primary btn-small js-join-cells"><i class="icon-resize-small icon-white"></i><span>Объединить</span></button>
+                <button class="btn btn-primary btn-small js-split-cells"><i class="icon-resize-full icon-white"></i><span>Разделить</span></button>
+              </div>
+              <div class="table__panel-group"></div>
             </div>
           </div>
           <div class="table__wrapper"></div>

@@ -3,14 +3,15 @@ let selection = {
 	hovered: null,
 	end: null,
 	active: false,
-	clickCount: 0
+	clickCount: 0,
+	cells: []
 };
 
-const setCellFocus = (td, parent) => {
+const setCellFocus = (cell, parent) => {
 	const cells = parent.querySelectorAll("td, th");
 
 	cells.forEach(cell => cell.classList.remove("focused"));
-	td.classList.add("focused");
+	cell.classList.add("focused");
 }
 
 // Событие редактирования ячейки
@@ -19,13 +20,14 @@ const setEditableCellEvent = (cell, parent) => {
 		if (!selection.active) { // В обычном режиме
 			setCellFocus(cell, parent);
 			makeCellEditable(cell);
-		} else if (cell.tagName === "TD") { // В режиме объединения/разделения ячеек
+		} else if (cell.tagName === "TD" || cell.tagName === "TH") { // В режиме объединения/разделения ячеек
 			const rowIndex = +cell.dataset.row;
 			const columnIndex = +cell.dataset.column;
+			const isHeader = cell.tagName === "TH";
 
 			switch (selection.clickCount) {
 				case 0:
-					selection.start = {rowIndex, columnIndex};
+					selection.start = {rowIndex, columnIndex, isHeader};
 					selection.clickCount += 1;
 					break;
 				case 1:
@@ -33,7 +35,7 @@ const setEditableCellEvent = (cell, parent) => {
 						selection.start.columnIndex !== +cell.dataset.column
 					) {
 						selection.clickCount += 1;
-						parent.querySelectorAll("td").forEach(cell => cell.style.backgroundColor = "");
+						parent.querySelectorAll("td, th").forEach(cell => cell.style.backgroundColor = "");
 						selection.end = {rowIndex, columnIndex};
 						joinCells(parent);
 					} else {
@@ -47,14 +49,15 @@ const setEditableCellEvent = (cell, parent) => {
 
 // Выделение ячеек при объединении/разделении
 const updateSelectionHandler = (table, cell) => {
-	if (cell.tagName !== "TD") return;
+	// Сбрасываем выделение
+	table.querySelectorAll("td, th").forEach(cell => cell.style.backgroundColor = "");
 
 	const rowIndex = +cell.dataset.row;
 	const columnIndex = +cell.dataset.column;
+	const isHeader = cell.tagName === "TH";
 
-	selection.hovered = {rowIndex, columnIndex};
-
-	table.querySelectorAll("td").forEach(cell => cell.style.backgroundColor = "");
+	selection.hovered = {rowIndex, columnIndex, isHeader};
+	selection.cells = [cell];
 
 	if (!selection.start || !selection.hovered || selection.clickCount > 1) return;
 
@@ -62,13 +65,22 @@ const updateSelectionHandler = (table, cell) => {
 	const endRow = Math.max(selection.start.rowIndex, selection.hovered.rowIndex);
 	const startColumn = Math.min(selection.start.columnIndex, selection.hovered.columnIndex);
 	const endColumn = Math.max(selection.start.columnIndex, selection.hovered.columnIndex);
-	
-	for (let row = startRow; row <= endRow; row++) {
-		for (let column = startColumn; column <= endColumn; column++) {
-			const cellSelected = table.querySelector(`td[data-row="${row}"][data-column="${column}"]`);
+
+	selection.cells = [];
+	const rows = selection.start.isHeader ?
+		table.querySelector("thead").rows :
+		table.querySelector("tbody").rows;
+
+	for (let rowIndex = startRow; rowIndex <= endRow; rowIndex++) {
+		const row = rows[rowIndex];
+		if (!row) continue;
+
+		for (let columnIndex = startColumn; columnIndex <= endColumn; columnIndex++) {
+			const cellSelected = row.cells[columnIndex];
 
 			if (cellSelected) {
 				cellSelected.style.backgroundColor = "#a2ddfa";
+				selection.cells.push(cell);
 			}
 		}
 	}
@@ -77,31 +89,58 @@ const updateSelectionHandler = (table, cell) => {
 // Объединение ячеек
 const joinCells = (table) => {
 	const startRow = Math.min(selection.start.rowIndex, selection.end.rowIndex);
-	const endRow = Math.max(selection.start.rowIndex, selection.end.rowIndex);
+	const endRow = selection.start.isHeader ?
+		0 :
+		Math.max(selection.start.rowIndex, selection.end.rowIndex);
 	const startColumn = Math.min(selection.start.columnIndex, selection.end.columnIndex);
 	const endColumn = Math.max(selection.start.columnIndex, selection.end.columnIndex);
 
-	const rows = table.querySelectorAll("tbody tr");
-	const tdFirst = rows[startRow].cells[startColumn]; // Первая выделенная ячейка
-	const tdFirstValue = tdFirst.textContent; // Значение первой выделенной ячейки
+	const rows = selection.start.isHeader ?
+		table.querySelector("thead").rows :
+		table.querySelector("tbody").rows;
+	const cellFirst = rows[startRow].cells[startColumn]; // Первая выделенная ячейка
+	const cellFirstValue = cellFirst.textContent; // Значение первой выделенной ячейки
 
 	for (let row = startRow; row <= endRow; row++) {
 		for (let column = startColumn; column <= endColumn; column++) {
 			if (row === startRow && column === startColumn) continue; // Пропускаем первую ячейку, остальные прячем
 
-			const td = rows[row].cells[column];
-			td.setAttribute("hidden", "true");
-			td.setAttribute("data-merged", "true");
-			td.setAttribute("data-merged-with", `${startRow}, ${startColumn}`);
+			const cell = rows[row].cells[column];
+			cell.setAttribute("hidden", "true");
+			cell.setAttribute("data-merged", "true");
+			cell.setAttribute("data-merged-with", `${startRow}, ${startColumn}`);
 		}
 	}
 
-	tdFirst.rowSpan = endRow - startRow + 1;
-	tdFirst.colSpan = endColumn - startColumn + 1;
-	tdFirst.textContent = tdFirstValue;
-	tdFirst.setAttribute("data-merged-main", "true");
+	cellFirst.rowSpan = endRow - startRow + 1;
+	cellFirst.colSpan = endColumn - startColumn + 1;
+	cellFirst.textContent = cellFirstValue;
+	cellFirst.setAttribute("data-merged-main", "true");
 
 	resetSelection();
+}
+
+// Разделение ячеек
+const splitCells = (table) => {
+	const focusedCell = table.querySelector(".focused[data-merged-main]");
+
+	if (focusedCell) {
+		const mergedCells = table.querySelectorAll(`[data-merged-with="${focusedCell.dataset.row}, ${focusedCell.dataset.column}"]`);
+
+		// Сбрасываем colspan и rowspan у выделенной ячейки
+		focusedCell.removeAttribute("colspan");
+		focusedCell.removeAttribute("rowspan");
+		focusedCell.removeAttribute("data-merged-main");
+
+		// Показываем скрытые ячейки
+		mergedCells.forEach(cell => {
+			cell.removeAttribute("hidden");
+			cell.removeAttribute("data-merged");
+			cell.removeAttribute("data-merged-with");
+		});
+
+		resetSelection();
+	}
 }
 
 const createTable = (parent, rowsInput, columnsInput, menuCreate, menuPanel) => {
@@ -128,6 +167,7 @@ const createTable = (parent, rowsInput, columnsInput, menuCreate, menuPanel) => 
 
 		th.dataset.row = "0";
 		th.dataset.column = cell.toString();
+		th.dataset.type = "th";
 		headerRow.append(th);
 
 		setEditableCellEvent(th, parent);
@@ -178,7 +218,7 @@ const createTable = (parent, rowsInput, columnsInput, menuCreate, menuPanel) => 
 }
 
 const makeCellEditable = (td) => {
-	const currentText = td.textContent;
+	const currentText = td.innerHTML;
 	td.textContent = "";
 
 	const input = document.createElement("input");
@@ -189,7 +229,7 @@ const makeCellEditable = (td) => {
 	input.focus();
 
 	const finishEditing = () => {
-		td.textContent = input.value;
+		td.innerHTML = input.value;
 	}
 
 	input.addEventListener("blur", finishEditing);
@@ -239,6 +279,73 @@ const createColumnHandler = (table) => {
 	});
 }
 
+// Редактирование текста ячейки
+const editText = (focusedCell, button) => {
+	const action = button.dataset.edit;
+
+	if (focusedCell) {
+		const style = focusedCell.style;
+
+		switch (action) {
+			case "bold":
+				style.fontWeight = "700";
+				break;
+			case "italic":
+				style.fontStyle = "italic";
+				break;
+			case "horizontal-left":
+				style.textAlign = "left";
+				break;
+			case "horizontal-center":
+				style.textAlign = "center";
+				break;
+			case "horizontal-right":
+				style.textAlign = "right";
+				break;
+			case "remove-edit":
+				focusedCell.removeAttribute("style");
+				break;
+		}
+	}
+}
+
+const pasteLink = (table, form, event) => {
+	if (form) {
+		const submit = form.querySelector('[type="submit"]');
+
+		event.stopPropagation();
+
+		submit.addEventListener("click", (e) => {
+			const textFieldValue = form.querySelector('[name="link-text"]').value;
+			const focusedCell = table.querySelector(".focused");
+
+			e.preventDefault();
+
+			if (textFieldValue !== "" && focusedCell) {
+				const linkFieldValue = form.querySelector('[name="link"]').value;
+				const isBlank = form.querySelector('[name="link-target"]').value;
+				let linkEl = document.createElement("a");
+
+				linkEl.textContent = textFieldValue;
+
+				if (linkFieldValue) {
+					linkEl.setAttribute("href", linkFieldValue);
+				}
+
+				if (isBlank) {
+					linkEl.setAttribute("target", "_blank");
+				}
+
+				focusedCell.append(linkEl);
+				form.setAttribute("hidden", "true");
+				form.reset();
+			}
+		});
+
+		form.removeAttribute("hidden");
+	}
+}
+
 const resetSelection = () => {
 	selection = {
 		start: null,
@@ -260,6 +367,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	const addRowButton = menuPanel.querySelector(".js-create-row");
 	const addColumnButton = menuPanel.querySelector(".js-create-column");
 	const joinCellsButton = menuPanel.querySelector(".js-join-cells");
+	const splitCellsButton = menuPanel.querySelector(".js-split-cells");
+	const editButtons = menuPanel.querySelectorAll(".js-edit");
+	const linkButton = menuPanel.querySelector(".js-link");
+	const linkPopup = document.querySelector(".table__link-popup");
 
 	createButton.addEventListener("click", () => {
 		createTable(container, rowsInput, columnsInput, menuCreateTable, menuPanel);
@@ -270,5 +381,17 @@ document.addEventListener("DOMContentLoaded", () => {
 	addColumnButton.addEventListener("click", () => createColumnHandler(table));
 	joinCellsButton.addEventListener("click", () => {
 		selection.active = true;
+	});
+	splitCellsButton.addEventListener("click", () => splitCells(table));
+	editButtons.forEach(button => {
+		button.addEventListener("click", () => editText(table.querySelector(".focused"), button));
+	});
+	linkButton.addEventListener("click", (e) => pasteLink(table, linkPopup, e));
+
+	// Клик вне элемента - закрываем его
+	document.addEventListener("click", (e) => {
+		if (linkPopup && !linkPopup.hasAttribute("hidden") && !linkPopup.contains(e.target) && e.target !== linkPopup) {
+			linkPopup.setAttribute("hidden", "true");
+		}
 	});
 });
