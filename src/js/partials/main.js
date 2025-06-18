@@ -50,7 +50,7 @@ const setEditableCellEvent = (cell, parent) => {
 // Выделение ячеек при объединении/разделении
 const updateSelectionHandler = (table, cell) => {
 	// Сбрасываем выделение
-	table.querySelectorAll("td, th").forEach(cell => cell.style.backgroundColor = "");
+	table.querySelectorAll("td, th").forEach(cell => cell.classList.remove("selection"));
 
 	const rowIndex = +cell.dataset.row;
 	const columnIndex = +cell.dataset.column;
@@ -79,7 +79,7 @@ const updateSelectionHandler = (table, cell) => {
 			const cellSelected = row.cells[columnIndex];
 
 			if (cellSelected) {
-				cellSelected.style.backgroundColor = "#a2ddfa";
+				cellSelected.classList.add("selection");
 				selection.cells.push(cell);
 			}
 		}
@@ -309,17 +309,21 @@ const editText = (focusedCell, button) => {
 	}
 }
 
-const pasteLink = (table, form, event) => {
+const toggleDropdown = (forms, form, event) => {
 	if (form) {
-		const submit = form.querySelector('[type="submit"]');
-
 		event.stopPropagation();
+		forms.forEach(el => el.setAttribute("hidden", "true"));
+		form.removeAttribute("hidden");
+	}
+}
 
-		submit.addEventListener("click", (e) => {
+const dropdownSubmitHandler = (table, form, event, dropdownType) => {
+	event.preventDefault();
+	const focusedCell = table.querySelector(".focused");
+
+	switch (dropdownType) {
+		case "link":
 			const textFieldValue = form.querySelector('[name="link-text"]').value;
-			const focusedCell = table.querySelector(".focused");
-
-			e.preventDefault();
 
 			if (textFieldValue !== "" && focusedCell) {
 				const linkFieldValue = form.querySelector('[name="link"]').value;
@@ -337,12 +341,33 @@ const pasteLink = (table, form, event) => {
 				}
 
 				focusedCell.append(linkEl);
-				form.setAttribute("hidden", "true");
-				form.reset();
 			}
-		});
+			break;
+		case "color":
+			const colorFieldValue = form.querySelector('[name="color"]').value;
+			const applyTo = form.querySelector('[name="apply-to"]:checked').value;
 
-		form.removeAttribute("hidden");
+			switch (applyTo) {
+				case "cell":
+					focusedCell.style.backgroundColor = colorFieldValue;
+					break;
+				case "row":
+					focusedCell.parentElement.querySelectorAll("td, th").forEach(cell => cell.style.backgroundColor = colorFieldValue);
+					break;
+				case "column":
+					table.querySelectorAll("tr").forEach(tr => tr.cells[focusedCell.cellIndex].style.backgroundColor = colorFieldValue);
+					break;
+			}
+			break;
+	}
+	form.setAttribute("hidden", "true");
+	form.reset();
+}
+
+const exportToXLSX = (table, filename) => {
+	if (table) {
+		const book = XLSX.utils.table_to_book(table);
+		XLSX.writeFile(book, filename);
 	}
 }
 
@@ -369,8 +394,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	const joinCellsButton = menuPanel.querySelector(".js-join-cells");
 	const splitCellsButton = menuPanel.querySelector(".js-split-cells");
 	const editButtons = menuPanel.querySelectorAll(".js-edit");
-	const linkButton = menuPanel.querySelector(".js-link");
-	const linkPopup = document.querySelector(".table__link-popup");
+	const dropButtons = menuPanel.querySelectorAll('[data-dropdown]');
+	const dropdowns = menuPanel.querySelectorAll(".table__dropdown");
+	const importButton = menuPanel.querySelector(".js-import");
+	const exportButton = menuPanel.querySelector(".js-export");
 
 	createButton.addEventListener("click", () => {
 		createTable(container, rowsInput, columnsInput, menuCreateTable, menuPanel);
@@ -386,12 +413,29 @@ document.addEventListener("DOMContentLoaded", () => {
 	editButtons.forEach(button => {
 		button.addEventListener("click", () => editText(table.querySelector(".focused"), button));
 	});
-	linkButton.addEventListener("click", (e) => pasteLink(table, linkPopup, e));
+	dropButtons.forEach(button => {
+		const dropdown = button.nextElementSibling;
+		const submit = dropdown.querySelector('[type="submit"]');
+
+		button.addEventListener("click", (e) => toggleDropdown(dropdowns, dropdown, e));
+		submit.addEventListener("click", (e) => dropdownSubmitHandler(table, dropdown, e, button.dataset.dropdown));
+	});
+	exportButton.addEventListener("click", () => {
+		// Имя в формате import_DD_MM_YYYY.xlsx
+		exportToXLSX(
+			table, 
+			`import_${((new Date()).getDate()).toString().padStart(2, '0')}_${((new Date()).getMonth() + 1).toString().padStart(2, '0')}_${(new Date()).getFullYear()}.xlsx`
+		);
+	});
 
 	// Клик вне элемента - закрываем его
 	document.addEventListener("click", (e) => {
-		if (linkPopup && !linkPopup.hasAttribute("hidden") && !linkPopup.contains(e.target) && e.target !== linkPopup) {
-			linkPopup.setAttribute("hidden", "true");
-		}
+		dropButtons.forEach(button => {
+			const dropdown = button.nextElementSibling;
+
+			if (dropdown && !dropdown.hasAttribute("hidden") && !dropdown.contains(e.target) && e.target !== dropdown) {
+				dropdown.setAttribute("hidden", "true");
+			}
+		});
 	});
 });

@@ -22,6 +22,10 @@
 		display: flex;
 		align-items: center;
 		gap: 4px;
+
+		.btn {
+			flex-direction: row;
+		}
 	}
 
 	&__create {
@@ -37,7 +41,8 @@
 		gap: 5px;
 		margin: 0;
 
-		&.checkbox {
+		&.checkbox,
+		&.radio {
 			flex-direction: row;
 			align-items: center;
 			gap: 10px;
@@ -49,7 +54,16 @@
 		height: 26px;
 		margin: 0;
 
-		&[type="checkbox"] {
+		&[type="file"] {
+			display: none;
+		}
+
+		&[type="color"] {
+			padding: 0;
+		}
+
+		&[type="checkbox"],
+		&[type="radio"] {
 			display: none;
 
 			& + p {
@@ -92,6 +106,10 @@
 
 		td {
 			font-size: 12px;
+
+			&.selection {
+				background-color: #a2ddfa !important;
+			}
 		}
 
 		a {
@@ -100,11 +118,11 @@
 		}
 	}
 
-	&__button-with-popup {
+	&__button-with-dropdown {
 		position: relative;
 	}
 
-	&__link-popup {
+	&__dropdown {
 		position: absolute;
 		top: 100%;
 		left: 0;
@@ -117,6 +135,11 @@
 
 		.btn {
 			align-self: flex-start;
+		}
+
+		& > span {
+			font-size: 16px;
+			margin-top: 15px;
 		}
 	}
 }

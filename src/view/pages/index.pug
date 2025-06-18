@@ -30,10 +30,10 @@ block main
 							i.icon-align-right.icon-white
 						button.btn.btn-primary.btn-small.js-edit(data-edit='remove-edit')
 							i.icon-remove.icon-white
-						.table__button-with-popup
-							button.btn.btn-primary.btn-small.js-link
+						.table__button-with-dropdown
+							button.btn.btn-primary.btn-small(data-dropdown='link')
 								span Ссылка
-							form.table__link-popup(hidden)
+							form.table__dropdown(hidden)
 								input(type='text', name='link-text', placeholder='Текст')
 								input(type='text', name='link', placeholder='Ссылка')
 								label.checkbox
@@ -41,6 +41,29 @@ block main
 									p
 										i.icon-ok
 									span В новом окне?
+								button.btn.btn-primary.btn-small(type='submit') Добавить
+						.table__button-with-dropdown
+							button.btn.btn-primary.btn-small(data-dropdown='color')
+								i.icon-tint.icon-white
+								span Цвет ячейки
+							form.table__dropdown
+								input(type='color', name='color', value='#ffffff')
+								span Применить к
+								label.radio
+									input(type='radio', name='apply-to', value='cell', checked)
+									p
+										i.icon-ok
+									span Выделенной ячейке
+								label.radio
+									input(type='radio', name='apply-to', value='row')
+									p
+										i.icon-ok
+									span Строке
+								label.radio
+									input(type='radio', name='apply-to', value='column')
+									p
+										i.icon-ok
+									span Столбцу
 								button.btn.btn-primary.btn-small(type='submit') Добавить
 					.table__panel-group
 						button.btn.btn-primary.btn-small.js-create-row
@@ -57,4 +80,11 @@ block main
 							i.icon-resize-full.icon-white
 							span Разделить
 					.table__panel-group
+						label.btn.btn-primary.btn-small.js-import
+							i.icon-upload.icon-white
+							span Импорт
+							input(type='file', accept='.csv,.xlsx,.xls')
+						button.btn.btn-primary.btn-small.js-export
+							i.icon-download.icon-white
+							span Экспорт
 			.table__wrapper

@@ -30,14 +30,33 @@
                 <button class="btn btn-primary btn-small js-edit" data-edit="horizontal-center"><i class="icon-align-center icon-white"></i></button>
                 <button class="btn btn-primary btn-small js-edit" data-edit="horizontal-right"><i class="icon-align-right icon-white"></i></button>
                 <button class="btn btn-primary btn-small js-edit" data-edit="remove-edit"><i class="icon-remove icon-white"></i></button>
-                <div class="table__button-with-popup">
-                  <button class="btn btn-primary btn-small js-link"><span>Ссылка</span></button>
-                  <form class="table__link-popup" hidden>
+                <div class="table__button-with-dropdown">
+                  <button class="btn btn-primary btn-small" data-dropdown="link"><span>Ссылка</span></button>
+                  <form class="table__dropdown" hidden>
                     <input type="text" name="link-text" placeholder="Текст">
                     <input type="text" name="link" placeholder="Ссылка">
                     <label class="checkbox">
                       <input type="checkbox" name="link-target">
                       <p><i class="icon-ok"></i></p><span>В новом окне?</span>
+                    </label>
+                    <button class="btn btn-primary btn-small" type="submit">Добавить</button>
+                  </form>
+                </div>
+                <div class="table__button-with-dropdown">
+                  <button class="btn btn-primary btn-small" data-dropdown="color"><i class="icon-tint icon-white"></i><span>Цвет ячейки</span></button>
+                  <form class="table__dropdown">
+                    <input type="color" name="color" value="#ffffff"><span>Применить к</span>
+                    <label class="radio">
+                      <input type="radio" name="apply-to" value="cell" checked>
+                      <p><i class="icon-ok"></i></p><span>Выделенной ячейке</span>
+                    </label>
+                    <label class="radio">
+                      <input type="radio" name="apply-to" value="row">
+                      <p><i class="icon-ok"></i></p><span>Строке</span>
+                    </label>
+                    <label class="radio">
+                      <input type="radio" name="apply-to" value="column">
+                      <p><i class="icon-ok"></i></p><span>Столбцу</span>
                     </label>
                     <button class="btn btn-primary btn-small" type="submit">Добавить</button>
                   </form>
@@ -51,7 +70,12 @@
                 <button class="btn btn-primary btn-small js-join-cells"><i class="icon-resize-small icon-white"></i><span>Объединить</span></button>
                 <button class="btn btn-primary btn-small js-split-cells"><i class="icon-resize-full icon-white"></i><span>Разделить</span></button>
               </div>
-              <div class="table__panel-group"></div>
+              <div class="table__panel-group">
+                <label class="btn btn-primary btn-small js-import"><i class="icon-upload icon-white"></i><span>Импорт</span>
+                  <input type="file" accept=".csv,.xlsx,.xls">
+                </label>
+                <button class="btn btn-primary btn-small js-export"><i class="icon-download icon-white"></i><span>Экспорт</span></button>
+              </div>
             </div>
           </div>
           <div class="table__wrapper"></div>
