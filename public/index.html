@@ -61,18 +61,29 @@
                     <button class="btn btn-primary btn-small" type="submit">Добавить</button>
                   </form>
                 </div>
+                <div class="table__button-with-dropdown">
+                  <button class="btn btn-primary btn-small" data-dropdown="width"><i class="icon-resize-horizontal icon-white"></i><span>Ширина столбца</span></button>
+                  <form class="table__dropdown">
+                    <input type="text" name="width" placeholder="Ширина в px">
+                    <button class="btn btn-primary btn-small" type="submit">Добавить</button>
+                  </form>
+                </div>
               </div>
               <div class="table__panel-group">
                 <button class="btn btn-primary btn-small js-create-row"><i class="icon-plus-sign icon-white"></i><span>Строка</span></button>
                 <button class="btn btn-primary btn-small js-create-column"><i class="icon-plus-sign icon-white"></i><span>Столбец</span></button>
               </div>
               <div class="table__panel-group">
+                <button class="btn btn-primary btn-small js-remove-row"><i class="icon-trash icon-white"></i><span>Удалить строку</span></button>
+                <button class="btn btn-primary btn-small js-remove-column"><i class="icon-trash icon-white"></i><span>Удалить столбец</span></button>
+              </div>
+              <div class="table__panel-group">
                 <button class="btn btn-primary btn-small js-join-cells"><i class="icon-resize-small icon-white"></i><span>Объединить</span></button>
                 <button class="btn btn-primary btn-small js-split-cells"><i class="icon-resize-full icon-white"></i><span>Разделить</span></button>
               </div>
               <div class="table__panel-group">
-                <label class="btn btn-primary btn-small js-import"><i class="icon-upload icon-white"></i><span>Импорт</span>
-                  <input type="file" accept=".csv,.xlsx,.xls">
+                <label class="btn btn-primary btn-small"><i class="icon-upload icon-white"></i><span>Импорт</span>
+                  <input class="js-import" type="file" accept=".csv,.xlsx,.xls"><span class="error-msg" hidden></span>
                 </label>
                 <button class="btn btn-primary btn-small js-export"><i class="icon-download icon-white"></i><span>Экспорт</span></button>
               </div>

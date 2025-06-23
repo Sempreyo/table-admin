@@ -14,6 +14,7 @@
 
 	&__panel {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		gap: 15px;
 	}
@@ -36,6 +37,7 @@
 	}
 
 	label {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		gap: 5px;
@@ -48,6 +50,14 @@
 			gap: 10px;
 			padding: 0;
 		}
+	}
+
+	.error-msg {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		color: red;
+		font-size: 12px;
 	}
 
 	input {
@@ -97,19 +107,20 @@
 			&.focused {
 				outline: 1px solid #000;
 			}
+
+			&.selection {
+				background-color: #a2ddfa !important;
+			}
 		}
 
 		th {
 			font-size: 14px;
 			font-weight: 700;
+			background-color: #f4f5f5;
 		}
 
 		td {
 			font-size: 12px;
-
-			&.selection {
-				background-color: #a2ddfa !important;
-			}
 		}
 
 		a {
@@ -126,6 +137,7 @@
 		position: absolute;
 		top: 100%;
 		left: 0;
+		z-index: 2;
 		display: flex;
 		flex-direction: column;
 		gap: 10px;

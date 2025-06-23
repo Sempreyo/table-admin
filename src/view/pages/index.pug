@@ -65,6 +65,13 @@ block main
 										i.icon-ok
 									span Столбцу
 								button.btn.btn-primary.btn-small(type='submit') Добавить
+						.table__button-with-dropdown
+							button.btn.btn-primary.btn-small(data-dropdown='width')
+								i.icon-resize-horizontal.icon-white
+								span Ширина столбца
+							form.table__dropdown
+								input(type='text', name='width', placeholder='Ширина в px')
+								button.btn.btn-primary.btn-small(type='submit') Добавить
 					.table__panel-group
 						button.btn.btn-primary.btn-small.js-create-row
 							i.icon-plus-sign.icon-white
@@ -73,6 +80,13 @@ block main
 							i.icon-plus-sign.icon-white
 							span Столбец
 					.table__panel-group
+						button.btn.btn-primary.btn-small.js-remove-row
+							i.icon-trash.icon-white
+							span Удалить строку
+						button.btn.btn-primary.btn-small.js-remove-column
+							i.icon-trash.icon-white
+							span Удалить столбец
+					.table__panel-group
 						button.btn.btn-primary.btn-small.js-join-cells
 							i.icon-resize-small.icon-white
 							span Объединить
@@ -80,10 +94,11 @@ block main
 							i.icon-resize-full.icon-white
 							span Разделить
 					.table__panel-group
-						label.btn.btn-primary.btn-small.js-import
+						label.btn.btn-primary.btn-small
 							i.icon-upload.icon-white
 							span Импорт
-							input(type='file', accept='.csv,.xlsx,.xls')
+							input.js-import(type='file', accept='.csv,.xlsx,.xls')
+							span.error-msg(hidden)
 						button.btn.btn-primary.btn-small.js-export
 							i.icon-download.icon-white
 							span Экспорт
