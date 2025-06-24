@@ -1,4 +1,15 @@
 .table {
+	.btn {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		align-self: flex-end;
+		min-width: 26px;
+		padding: 5px;
+		font-size: 14px;
+		line-height: 1;
+	}
+
 	&__wrapper {
 		margin-top: 40px;
 	}
@@ -82,6 +93,7 @@
 				background-color: #fff;
 				border: 1px solid #ccc;
 				box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+				margin-bottom: 0;
 
 				i {
 					display: none;
@@ -141,6 +153,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
+		min-width: 200px;
 		background-color: #fff;
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 		padding: 20px 10px;

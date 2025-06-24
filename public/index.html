@@ -32,19 +32,19 @@
                 <button class="btn btn-primary btn-small js-edit" data-edit="remove-edit"><i class="icon-remove icon-white"></i></button>
                 <div class="table__button-with-dropdown">
                   <button class="btn btn-primary btn-small" data-dropdown="link"><span>Ссылка</span></button>
-                  <form class="table__dropdown" hidden>
+                  <div class="table__dropdown" hidden>
                     <input type="text" name="link-text" placeholder="Текст">
                     <input type="text" name="link" placeholder="Ссылка">
                     <label class="checkbox">
                       <input type="checkbox" name="link-target">
                       <p><i class="icon-ok"></i></p><span>В новом окне?</span>
                     </label>
-                    <button class="btn btn-primary btn-small" type="submit">Добавить</button>
-                  </form>
+                    <button class="btn btn-primary btn-small js-dropdown-submit">Добавить</button>
+                  </div>
                 </div>
                 <div class="table__button-with-dropdown">
                   <button class="btn btn-primary btn-small" data-dropdown="color"><i class="icon-tint icon-white"></i><span>Цвет ячейки</span></button>
-                  <form class="table__dropdown">
+                  <div class="table__dropdown">
                     <input type="color" name="color" value="#ffffff"><span>Применить к</span>
                     <label class="radio">
                       <input type="radio" name="apply-to" value="cell" checked>
@@ -58,15 +58,15 @@
                       <input type="radio" name="apply-to" value="column">
                       <p><i class="icon-ok"></i></p><span>Столбцу</span>
                     </label>
-                    <button class="btn btn-primary btn-small" type="submit">Добавить</button>
-                  </form>
+                    <button class="btn btn-primary btn-small js-dropdown-submit">Добавить</button>
+                  </div>
                 </div>
                 <div class="table__button-with-dropdown">
                   <button class="btn btn-primary btn-small" data-dropdown="width"><i class="icon-resize-horizontal icon-white"></i><span>Ширина столбца</span></button>
-                  <form class="table__dropdown">
+                  <div class="table__dropdown">
                     <input type="text" name="width" placeholder="Ширина в px">
-                    <button class="btn btn-primary btn-small" type="submit">Добавить</button>
-                  </form>
+                    <button class="btn btn-primary btn-small js-dropdown-submit">Добавить</button>
+                  </div>
                 </div>
               </div>
               <div class="table__panel-group">

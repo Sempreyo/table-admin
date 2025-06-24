@@ -381,7 +381,6 @@ const dropdownSubmitHandler = (table, form, event, dropdownType) => {
 			break;
 	}
 	form.setAttribute("hidden", "true");
-	form.reset();
 }
 
 const exportToXLSX = (table, filename) => {
@@ -574,7 +573,15 @@ document.addEventListener("DOMContentLoaded", () => {
 	const importField = menuPanel.querySelector(".js-import");
 	const exportButton = menuPanel.querySelector(".js-export");
 
-	createButton.addEventListener("click", () => {
+	// На всех кнопках сбрасываем стандартное поведение
+	menuPanel.querySelectorAll("button").forEach(button => {
+		button.addEventListener("click", (e) => {
+			e.preventDefault();
+		});
+	});
+
+	createButton.addEventListener("click", (e) => {
+		e.preventDefault();
 		createTable(container, rowsInput, columnsInput, menuCreateTable, menuPanel);
 		table = container.querySelector(".table__wrapper table");
 	});
@@ -592,7 +599,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 	dropButtons.forEach(button => {
 		const dropdown = button.nextElementSibling;
-		const submit = dropdown.querySelector('[type="submit"]');
+		const submit = dropdown.querySelector(".js-dropdown-submit");
 
 		button.addEventListener("click", (e) => toggleDropdown(dropdowns, dropdown, e));
 		submit.addEventListener("click", (e) => dropdownSubmitHandler(table, dropdown, e, button.dataset.dropdown));

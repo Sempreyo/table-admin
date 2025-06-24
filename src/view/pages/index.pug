@@ -33,7 +33,7 @@ block main
 						.table__button-with-dropdown
 							button.btn.btn-primary.btn-small(data-dropdown='link')
 								span Ссылка
-							form.table__dropdown(hidden)
+							.table__dropdown(hidden)
 								input(type='text', name='link-text', placeholder='Текст')
 								input(type='text', name='link', placeholder='Ссылка')
 								label.checkbox
@@ -41,12 +41,12 @@ block main
 									p
 										i.icon-ok
 									span В новом окне?
-								button.btn.btn-primary.btn-small(type='submit') Добавить
+								button.btn.btn-primary.btn-small.js-dropdown-submit Добавить
 						.table__button-with-dropdown
 							button.btn.btn-primary.btn-small(data-dropdown='color')
 								i.icon-tint.icon-white
 								span Цвет ячейки
-							form.table__dropdown
+							.table__dropdown
 								input(type='color', name='color', value='#ffffff')
 								span Применить к
 								label.radio
@@ -64,14 +64,14 @@ block main
 									p
 										i.icon-ok
 									span Столбцу
-								button.btn.btn-primary.btn-small(type='submit') Добавить
+								button.btn.btn-primary.btn-small.js-dropdown-submit Добавить
 						.table__button-with-dropdown
 							button.btn.btn-primary.btn-small(data-dropdown='width')
 								i.icon-resize-horizontal.icon-white
 								span Ширина столбца
-							form.table__dropdown
+							.table__dropdown
 								input(type='text', name='width', placeholder='Ширина в px')
-								button.btn.btn-primary.btn-small(type='submit') Добавить
+								button.btn.btn-primary.btn-small.js-dropdown-submit Добавить
 					.table__panel-group
 						button.btn.btn-primary.btn-small.js-create-row
 							i.icon-plus-sign.icon-white
