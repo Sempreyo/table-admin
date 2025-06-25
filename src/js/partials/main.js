@@ -238,6 +238,19 @@ const makeCellEditable = (td) => {
 	});
 }
 
+const recalculateRowColumnIndex = (table) => {
+    const rows = table.querySelectorAll("tbody tr");
+
+    rows.forEach((row, rowIndex) => {
+        const cells = row.querySelectorAll("td");
+
+        cells.forEach((cell, cellIndex) => {
+            cell.dataset.row = rowIndex.toString();
+            cell.dataset.column = cellIndex.toString();
+        });
+    });
+}
+
 const createRowHandler = (table) => {
 	const focusedCell = table.querySelector(".focused");
 
@@ -254,6 +267,8 @@ const createRowHandler = (table) => {
 		})
 
 		row.insertAdjacentElement("afterend", newRow);
+
+		recalculateRowColumnIndex(table);
 	}
 }
 
@@ -263,6 +278,7 @@ const removeRowHandler = (table) => {
 	if (focusedCell) {
 		const row = focusedCell.closest("tr");
 		row.remove();
+		recalculateRowColumnIndex(table);
 	}
 }
 
@@ -279,6 +295,8 @@ const createColumnHandler = (table) => {
 
 		cellSelected.insertAdjacentElement("afterend", newCell);
 	});
+
+	recalculateRowColumnIndex(table);
 }
 
 const removeColumnHandler = (table) => {
@@ -288,6 +306,8 @@ const removeColumnHandler = (table) => {
 		const cellSelected = tr.querySelectorAll("td, th")[focusedCellIndex];
 		cellSelected.remove();
 	});
+
+	recalculateRowColumnIndex(table);
 }
 
 // Редактирование текста ячейки

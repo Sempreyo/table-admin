@@ -10,6 +10,14 @@
 		line-height: 1;
 	}
 
+	.main_table {
+		max-width: 100%;
+	}
+	
+	&__cell {
+		min-height: 20px;
+	}
+
 	&__wrapper {
 		margin-top: 40px;
 	}
@@ -32,11 +40,17 @@
 
 	&__panel-group {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		gap: 4px;
 
 		.btn {
 			flex-direction: row;
+		}
+
+		&--full {
+			width: 100%;
+			gap: 12px;
 		}
 	}
 
@@ -45,6 +59,11 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 10px;
+	}
+
+	&__outer-label {
+		width: 100%;
+		font-size: 18px;
 	}
 
 	label {
@@ -114,6 +133,7 @@
 		td {
 			border: 1px solid #ddd !important;
 			padding: 10px;
+			box-sizing: border-box;
 			user-select: none;
 
 			&.focused {
