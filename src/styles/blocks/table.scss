@@ -13,6 +13,15 @@
 	.main_table {
 		max-width: 100%;
 	}
+
+	&__tooltip {
+		position: fixed;
+		z-index: 10;
+		padding: 10px;
+		background-color: #ffffff;
+		border: 1px solid #ddd !important;
+		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+	}
 	
 	&__cell {
 		min-height: 20px;
@@ -90,6 +99,11 @@
 		font-size: 12px;
 	}
 
+	textarea {
+		width: calc(100% + 5px);
+		margin: -10px;
+	}
+
 	input {
 		height: 26px;
 		margin: 0;
@@ -146,9 +160,27 @@
 		}
 
 		th {
+			position: relative !important;
 			font-size: 14px;
 			font-weight: 700;
 			background-color: #f4f5f5;
+
+			&.sortable {
+				&::after {
+					position: absolute;
+					top: 0;
+					right: 0;
+					content: "";
+					display: inline-block;
+					width: 14px;
+					height: 14px;
+					line-height: 14px;
+					vertical-align: text-top;
+					background-image: url("../img/glyphicons-halflings.png");
+					background-repeat: no-repeat;
+					background-position: -313px -119px;
+				}
+			}
 		}
 
 		td {
